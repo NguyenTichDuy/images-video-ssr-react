@@ -1,43 +1,34 @@
 const path = require('path');
+const { merge } = require('webpack-merge');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const sharedConfig = require('./webpack.shared.config.js');
 
-module.exports = {
-  mode: "development",
+let config = {
   entry: {
     index: './src/index.js',
   },
   output: {
-    filename: '[name].js',
+    filename: '[name].[contenthash].js',
     path: path.resolve(__dirname, 'dist'),
     clean: true
+  },
+  devServer: {
+    static: './dist',
   },
   module: {
     rules: [
       {
-        test: /\.js$/i,
-        use: ['babel-loader']
-      },
-      {
         test: /\.css$/i,
         use: ['style-loader', 'css-loader'],
       },
-      {
-        test: /\.(png|svg|jpg|jpeg|gif)$/i,
-        type: 'asset/resource',
-      },
-    ],
+    ]
+
   },
   plugins: [
     new HtmlWebpackPlugin({
       template: path.join(__dirname, 'public', 'index.html')
     }),
   ],
-  devServer: {
-    static: './dist',
-  },
-  optimization: {
-    splitChunks: {
-      chunks: 'all',
-    },
-  },
 };
+
+module.exports = merge(sharedConfig(), config);
